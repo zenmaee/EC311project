@@ -29,26 +29,25 @@ module timer_1(
     input sec_in, // from debouncer
     input resetn, // active low (red)
     output [4:0] hour_out, 
-    output [5:0] min_out,
-    output [5:0] sec_out
+    output [5:0] min_out, sec_out
     );
     
-    localparam [3:0]
-        STATE_IDLE = 4'b0000,
-        STATE_INPUT = 4'b0001,
-        STATE_COUNTDOWN = 4'b0010,
-        STATE_PAUSE = 4'b0011;
+    localparam [1:0]
+        STATE_IDLE = 2'b00,
+        STATE_INPUT = 2'b01,
+        STATE_COUNTDOWN = 2'b10,
+        STATE_PAUSE = 2'b11;
         
-    reg [3:0] state_reg = 0, state_next = 0;
-    reg [4:0] hour_value_reg = 0, hour_value_next;
-    reg [5:0] sec_value_reg = 0, sec_value_next, min_value_reg = 0, min_value_next; // goes up to 59
-    reg x_reg, x_next, y_reg, y_next; // how many bits?
+    reg [1:0] state_reg, state_next;
+    reg [4:0] hour_value_reg, hour_value_next; // goes up to 12 and 24
+    reg [5:0] sec_value_reg, sec_value_next, min_value_reg, min_value_next; // goes up to 59
+    // reg x_reg, x_next, y_reg, y_next;
     
     assign hour_out = hour_value_reg; // assigning reg to outputs
     assign min_out = min_value_reg;
     assign sec_out = sec_value_reg;
     
-    always@(posedge clk_1Hz) begin
+    always@(posedge clk_1Hz or negedge resetn) begin
         if (!resetn) begin
             state_reg <= STATE_IDLE;
             hour_value_reg <= 0;
@@ -81,14 +80,20 @@ module timer_1(
                 hour_value_next = 0;
                 min_value_next = 0;
                 sec_value_next = 0; // idle state values
-                if (mode_in) begin // if start_stop == 1 (countdown mode) - has priority over first statement
+                if (mode_in) begin // if mode_in == 1 (input mode) - has priority over first statement
                     state_next = STATE_INPUT;
                     //y_next = 1;
                 end
             end
             STATE_INPUT:
             begin
-                state_next = STATE_INPUT;      
+                state_next = STATE_INPUT;   
+                if (start_stop) begin
+                    state_next = STATE_COUNTDOWN; // timer starts
+                end else if (!mode_in) begin
+                    state_next = STATE_IDLE; // reset
+                end
+                   
                 if (hour_in) begin
                     hour_value_next = hour_value_reg + 1;
                     if (hour_value_reg == 12) begin // for 12 hour timer
@@ -100,7 +105,7 @@ module timer_1(
                     min_value_next = min_value_reg + 1;
                     if (min_value_reg == 59) begin
                         min_value_next = 0;
-                            if (hour_value_reg == 12) begin // for 12 hour timer
+                            if (hour_value_reg == 12) begin // limit for 12 hour timer - incrementing min does not work if hour is at 12
                                 min_value_next = 0;
                             end
                     end
@@ -116,32 +121,33 @@ module timer_1(
                     end
                     //x_next = 1; 
                 end
-                
-                if (start_stop) begin
-                    state_next = STATE_COUNTDOWN;
-                end else if (!mode_in) begin
-                    state_next = STATE_IDLE;
-                end
             end
             STATE_COUNTDOWN:
             begin
                 state_next = STATE_COUNTDOWN;
-                hour_value_next = hour_value_reg - 1;
-                min_value_next = min_value_reg - 1;
-                sec_value_next = sec_value_reg - 1;
-                if (sec_value_reg == 0) begin
+                if (!mode_in) begin 
+                    state_next = STATE_IDLE; // resets the timer
+                end else if (!start_stop) begin
+                    state_next = STATE_PAUSE;
+                end
+                
+                if (sec_value_reg > 0) begin
+                    sec_value_next = sec_value_reg - 1;
+                end else if (sec_value_reg == 0) begin
                     if (min_value_reg > 0) begin
                         min_value_next = min_value_reg - 1;
                         sec_value_next = 6'd59;
-                    end else begin 
+                    end else begin // minute_value_reg == 0
                         if (hour_value_reg > 0) begin
                             hour_value_next = hour_value_reg - 1;
                             min_value_next = 6'd59;
                         end else begin
-                            state_next = STATE_IDLE;
+                            state_next = STATE_IDLE; // hour, minute and seconds are at 0 - return to idle state
                         end
                     end
-                end else if (min_value_reg == 0) begin
+                end 
+                
+                /* if (min_value_reg == 0) begin
                     if (sec_value_reg > 0) begin
                         sec_value_next = sec_value_reg - 1;
                     end else begin
@@ -152,7 +158,9 @@ module timer_1(
                             state_next = STATE_IDLE;
                         end
                     end 
-                end else if (hour_value_reg == 0) begin
+                end 
+                
+                if (hour_value_reg == 0) begin
                     if (sec_value_reg > 0) begin
                         sec_value_next = sec_value_reg - 1;
                     end else begin
@@ -163,13 +171,7 @@ module timer_1(
                             state_next = STATE_IDLE;
                         end
                     end
-                end
-                
-                if (!mode_in) begin 
-                    state_next = STATE_IDLE; // resets the timer
-                end else if (!start_stop) begin
-                    state_next = STATE_PAUSE;
-                end
+                end */ // not sure if these are necessary
             end
             STATE_PAUSE:
             begin
