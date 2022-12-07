@@ -141,6 +141,7 @@ module timer_1(
                         if (hour_value_reg > 0) begin
                             hour_value_next = hour_value_reg - 1;
                             min_value_next = 6'd59;
+                            sec_value_next = 6'd59;
                         end else begin
                             state_next = STATE_IDLE; // hour, minute and seconds are at 0 - return to idle state
                         end
