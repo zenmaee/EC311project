@@ -24,9 +24,6 @@ module stopwatch(
     input clk_1Hz, // from clock divider
     input start_stop, // switch
     input mode_in, // switch
-    input hour_in, // from debouncer
-    input min_in, // from debouncer
-    input sec_in, // from debouncer
     input resetn, // active low (red)
     output [4:0] hour_out, 
     output [5:0] min_out, sec_out
@@ -94,13 +91,16 @@ module stopwatch(
                     state_next = STATE_PAUSE;
                 end
                 
-                if (sec_value_reg == 59) begin
+                if (sec_value_reg == 6'd59) begin
                     sec_value_next = 0;
                     min_value_next = min_value_reg + 1;
-                    if (min_value_reg == 59) begin
+                    if (min_value_reg == 6'd59) begin
+                        sec_value_next = 0;
                         min_value_next = 0;
                         hour_value_next = hour_value_reg + 1;
-                        if (hour_value_reg == 11) begin
+                        if (hour_value_reg == 5'd11) begin
+                            sec_value_next = 0;
+                            min_value_next = 0;
                             hour_value_next = 12; // for 12 hour stopwatch.
                             y_next = 1; // flag - states that the maximum value has been reached.
                             state_next = STATE_PAUSE; // display 'freezes' at 12:00:00 until user resets with mode_in == 1 to exit STATE_PAUSE and enter STATE_IDLE
