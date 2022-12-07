@@ -28,7 +28,8 @@ module timer_top_testbench(
     wire [4:0] hour_out;
     wire [5:0] min_out, sec_out;
     
-    timer_top TB_timer_top(.resetn(resetn), .clk_100MHz(clk_100MHz), .start_stop(start_stop), .mode_in(mode_in), .hour_in(hour_in), .min_in(min_in), .sec_in(sec_in));
+    timer_top TB_timer_module(.resetn(resetn), .clk_100MHz(clk_100MHz), .start_stop(start_stop), .mode_in(mode_in), .hour_in(hour_in), .min_in(min_in), .sec_in(sec_in),
+                                .hour_out(hour_out), .min_out(min_out), .sec_out(sec_out));
                     
     always #1 clk_100MHz=~clk_100MHz; // instantiating clock
     initial begin
@@ -41,19 +42,17 @@ module timer_top_testbench(
         #5 resetn=0; // negedge resetn
         #5 resetn=1;
         //#5 start_stop=1; // input mode
-        #1 sec_in=1;
-        #25 sec_in=0;
-        #47 sec_in=1;
-        #25 sec_in=0;
-        #47 sec_in=1;
-        #25 sec_in=0;
-        #47 sec_in=1;
-        #25 sec_in=0;
-        #47 sec_in=1;
-        #25 sec_in=0;
+        #1 hour_in=1;
+        #25 hour_in=0;
+        #47 hour_in=1;
+        #25 hour_in=0;
+        #47 hour_in=1;
+        #25 hour_in=0;
+        /*#47 sec_in=1;
+        #25 sec_in=0;*/
         #45 start_stop=1;
-        #75 start_stop=0;
-        #50 mode_in=0;
+        /*#200 start_stop=0;
+        #50 start_stop=1;*/
     end
     
 endmodule
