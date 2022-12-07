@@ -7,7 +7,7 @@ module clock_1Hz(
     reg [31:0]count = 32'd0;
     
     always@(posedge clk) begin 
-        if (count == 32'd100000000) begin 
+        if (count == 32'd100000000) begin // use (count == 32'd5) for simulations and for FPGA use (count = 32'd100000000)
             out_clk <= ~out_clk;
             count <= 0;
         end else begin
