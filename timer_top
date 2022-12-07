@@ -41,5 +41,5 @@ module timer_top(
     
     timer_1 timer(.clk_1Hz(clk_1Hz), .resetn(resetn), .start_stop(start_stop), .mode_in(mode_in), .hour_in(db_hour_button_out), .min_in(db_min_button_out), 
                     .sec_in(db_sec_button_out), .hour_out(hour_out), .min_out(min_out), .sec_out(sec_out));
-    
+                    
 endmodule
