@@ -128,13 +128,16 @@ module clock_12hour(
                     state_next = STATE_IDLE; // resets the clock
                 end
                 
-                if (sec_value_reg == 59) begin
+                if (sec_value_reg == 6'd59) begin
                     sec_value_next = 0;
                     min_value_next = min_value_reg + 1;
-                    if (min_value_reg == 59) begin
+                    if (min_value_reg == 6'd59) begin
+                        sec_value_next = 0;
                         min_value_next = 0;
                         hour_value_next = hour_value_reg + 1;
-                        if (hour_value_reg == 12) begin
+                        if (hour_value_reg == 5'd12) begin
+                            sec_value_next = 0;
+                            min_value_next = 0;
                             hour_value_next = 1; // for 12 hour clock ******************************
                         end
                     end
