@@ -1,0 +1,45 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 11/28/2022 11:22:22 AM
+// Design Name: 
+// Module Name: timer_top
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module clock_24hour_top(
+        input resetn,
+        input hour_in, min_in, sec_in,
+        input start_stop, mode_in,
+        input clk_100MHz, // assuming each module instantiates their own clock divider
+        output [4:0] hour_out,
+        output [5:0] min_out, sec_out
+    );
+    
+    wire db_hour_button_out,db_min_button_out, db_sec_button_out; // debouncer wires
+    wire clk_1Hz; // clock wires
+    
+    clock_1Hz clk_divider_100Mto1(.clk(clk_100MHz), .out_clk(clk_1Hz));
+    
+    debouncer DB_Hour(.clk(clk_1Hz), .resetn(resetn), .button_in(hour_in), .button_out(db_hour_button_out));
+    debouncer DB_Min(.clk(clk_1Hz), .resetn(resetn), .button_in(min_in), .button_out(db_min_button_out));
+    debouncer DB_Sec(.clk(clk_1Hz), .resetn(resetn), .button_in(sec_in), .button_out(db_sec_button_out));
+    // CHANGE DEB TO 1 SEC CLK 1HZ *****************************
+    
+    clock_24hour clock_24hour(.clk_1Hz(clk_1Hz), .resetn(resetn), .start_stop(start_stop), .mode_in(mode_in), .hour_in(db_hour_button_out), .min_in(db_min_button_out), 
+                    .sec_in(db_sec_button_out), .hour_out(hour_out), .min_out(min_out), .sec_out(sec_out));
+                    
+endmodule
