@@ -23,7 +23,8 @@ module top_square(
     input wire RST_BTN,  
     input wire[5:0] seconds,
     input wire[5:0] minutes,
-    input wire[4:0] hours,     
+    input wire[4:0] hours,
+    input wire[1:0]mode,
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,        // vertical sync output
     output wire [3:0] VGA_R    // 4-bit VGA red output
@@ -51,7 +52,7 @@ module top_square(
         .o_x(x), 
         .o_y(y)
     );
-    wire H01, H02, H03, H04, H05, H06, H07, H11, H12, H13, H14, H15, H16, H17, C01, C02, M01, M02, M03, M04, M05, M06, M07, M11, M12, M13, M14, M15, M16, M17, C11, C12, S01, S02, S03, S04, S05, S06, S07, S11, S12, S13, S14, S15, S16, S17, A1, A2, A3, A4, AP, M1, M2, M3, M4;
+    wire H01, H02, H03, H04, H05, H06, H07, H11, H12, H13, H14, H15, H16, H17, C01, C02, M01, M02, M03, M04, M05, M06, M07, M11, M12, M13, M14, M15, M16, M17, C11, C12, S01, S02, S03, S04, S05, S06, S07, S11, S12, S13, S14, S15, S16, S17, A1, A2, A3, A4, AP, M1, M2, M3, M4, SP1, SP2, SP3, SP4, SP5, W1, W2, W3, W4, T1, T2, O1, TW01, TW02, TW03, TW04, TW05, TW11, TW12, TW13, TW14, TW15, F1, F2, F3;
     assign H01 = ((x > 29) & (y > 136) & (x < 69) & (y < 150)) ? 1 : 0; 
     assign H02 = ((x > 13) & (y > 151) & (x < 27) & (y < 192)) ? 1 : 0; 
     assign H03 = ((x > 71) & (y > 151) & (x < 86) & (y < 190)) ? 1 : 0; 
@@ -108,10 +109,36 @@ module top_square(
     assign M17 = ((x>339) & (y > 250) & (x<378) & (y<264)) ? 1:0;
     assign C11 = ((x>420) & (y > 159) & (x<435) & (y<173)) ? 1:0;
     assign C12 = ((x>420) & (y > 230) & (x<435) & (y<244)) ? 1:0;
+    assign SP1 = ((x>40) & (y > 358) & (x<82) & (y<370)) ? 1:0;
+    assign SP2 = ((x>40) & (y > 370) & (x<52) & (y<392)) ? 1:0;
+    assign SP3 = ((x>40) & (y > 392) & (x<82) & (y<404)) ? 1:0;
+    assign SP4 = ((x>70) & (y > 404) & (x<82) & (y<426)) ? 1:0;
+    assign SP5 = ((x>40) & (y > 426) & (x<82) & (y<438)) ? 1:0;
+    assign W1 = ((x>101) & (y > 358) & (x<113) & (y<438)) ? 1:0;
+    assign W2 = ((x>144) & (y > 358) & (x<156) & (y<438)) ? 1:0;
+    assign W3 = ((x>113) & (y > 426) & (x<144) & (y<438)) ? 1:0;
+    assign W4 = ((x>124) & (y > 402) & (x<136) & (y<438)) ? 1:0;
+    assign T1 = ((x>207) & (y > 358) & (x<285) & (y<370)) ? 1:0;
+    assign T2 = ((x>240) & (y > 370) & (x<252) & (y<438)) ? 1:0;
+    assign O1 = ((x>343) & (y > 358) & (x<355) & (y<438)) ? 1:0;
+    assign TW01 = ((x>378) & (y > 358) & (x<427) & (y<370)) ? 1:0;
+    assign TW02 = ((x>415) & (y > 370) & (x<427) & (y<392)) ? 1:0;
+    assign TW03 = ((x>378) & (y > 392) & (x<427) & (y<404)) ? 1:0;
+    assign TW04 = ((x>378) & (y > 404) & (x<390) & (y<426)) ? 1:0;
+    assign TW05 = ((x>378) & (y > 426) & (x<427) & (y<438)) ? 1:0;
+    assign TW11 = ((x>485) & (y > 358) & (x<534) & (y<370)) ? 1:0;
+    assign TW12 = ((x>522) & (y > 370) & (x<534) & (y<392)) ? 1:0;
+    assign TW13 = ((x>485) & (y > 392) & (x<534) & (y<404)) ? 1:0;
+    assign TW14 = ((x>485) & (y > 404) & (x<497) & (y<426)) ? 1:0;
+    assign TW15 = ((x>485) & (y > 426) & (x<534) & (y<438)) ? 1:0;
+    assign F1 = ((x>555) & (y > 358) & (x<567) & (y<398)) ? 1:0;
+    assign F2 = ((x>567) & (y > 383) & (x<586) & (y<398)) ? 1:0;
+    assign F3 = ((x>586) & (y > 358) & (x<598) & (y<438)) ? 1:0;
+    
     reg grid;
     assign VGA_R[3] = grid;
 always @(*)begin
-grid = H01 + H02+ H03+ H04+ H05+ H06+ H07+ H11+ H12+ H13+ H14+ H15+ H16+ H17+ C01+ C02+ M01+ M02+ M03+ M04+ M05+ M06+ M07+ M11+ M12+ M13+ M14+ M15+ M16+ M17+ C11+ C12+ S01+ S02+ S03+ S04+ S05+ S06+ S07+ S11+ S12+ S13+ S14+ S15+ S16+ S17; // A1+ A2+ A3+ A4+ AP+ M1+ M2+ M3+ M4;
+grid = H01 + H02+ H03+ H04+ H05+ H06+ H07+ H11+ H12+ H13+ H14+ H15+ H16+ H17+ C01+ C02+ M01+ M02+ M03+ M04+ M05+ M06+ M07+ M11+ M12+ M13+ M14+ M15+ M16+ M17+ C11+ C12+ S01+ S02+ S03+ S04+ S05+ S06+ S07+ S11+ S12+ S13+ S14+ S15+ S16+ S17 +SP1+ SP2+ SP3+ SP4+ SP5+ W1+ W2+ W3+ W4+ T1+ T2+ O1+ TW01+ TW02+ TW03+ TW04+ TW05+ TW11+ TW12+ TW13+ TW14+ TW15+ F1+ F2+ F3; // A1+ A2+ A3+ A4+ AP+ M1+ M2+ M3+ M4;
     case(seconds)
         0 : grid = grid - S04 - S14;
         1 : grid = grid - S11 - S12 - S14 - S15 - S17 - S04;
@@ -173,7 +200,6 @@ grid = H01 + H02+ H03+ H04+ H05+ H06+ H07+ H11+ H12+ H13+ H14+ H15+ H16+ H17+ C0
         57 : grid = grid - S03 - S05 - S12 - S14 - S15 - S17;
         58 : grid = grid - S03 - S05;
         59 : grid = grid - S03 - S05 - S15 - S17;
-        60 : grid = grid - S03 - S14;
      endcase
      case(minutes)
         0 : grid = grid - M04 - M14;
@@ -236,7 +262,6 @@ grid = H01 + H02+ H03+ H04+ H05+ H06+ H07+ H11+ H12+ H13+ H14+ H15+ H16+ H17+ C0
         57 : grid = grid - M03 - M05 - M12 - M14 - M15 - M17;
         58 : grid = grid - M03 - M05;
         59 : grid = grid - M03 - M05 - M15 - M17;
-        60 : grid = grid - M03 - M14;
     endcase
     case(hours)
         0 : grid = grid - H04 - H14;
@@ -263,7 +288,14 @@ grid = H01 + H02+ H03+ H04+ H05+ H06+ H07+ H11+ H12+ H13+ H14+ H15+ H16+ H17+ C0
         21 : grid = grid - H11 - H12 - H14 - H15 - H17 - H02 - H06;
         22 : grid = grid - H12 - H16 - H02 - H06;
         23 : grid = grid - H02 - H06 - H12 - H15;
-        24 : grid = grid - H02 - H06 - H11 - H15 - H17;
     endcase
+    if(mode == 2'b00)
+        grid = grid - T1 - T2 - O1 - TW01 - TW02 - TW03 - TW04 - TW05 - TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3;
+    else if(mode == 2'b01)
+        grid = grid - T1 - T2 - O1 - TW01 - TW02 - TW03 - TW04 - TW05 - TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3 - SP1 - SP2 - SP3 - SP4 - SP5 - W1 - W2 - W3 - W4;
+    else if(mode == 2'b10)
+        grid = grid - SP1 - SP2 - SP3 - SP4 - SP5 - W1 - W2 - W3 - W4- T1 - T2- TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3;
+    else if(mode == 2'b11)
+        grid = grid - SP1 - SP2 - SP3 - SP4 - SP5 - W1 - W2 - W3 - W4- T1 - T2- O1 - TW01 - TW02 - TW03 - TW04 - TW05;
 end  
 endmodule
