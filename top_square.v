@@ -24,7 +24,7 @@ module top_square(
     input wire[5:0] seconds,
     input wire[5:0] minutes,
     input wire[4:0] hours,
-    input wire[1:0]mode,
+    input wire[1:0] mode,
     output wire VGA_HS_O,       // horizontal sync output
     output wire VGA_VS_O,        // vertical sync output
     output wire [3:0] VGA_R    // 4-bit VGA red output
@@ -292,7 +292,7 @@ grid = H01 + H02+ H03+ H04+ H05+ H06+ H07+ H11+ H12+ H13+ H14+ H15+ H16+ H17+ C0
     if(mode == 2'b00)
         grid = grid - T1 - T2 - O1 - TW01 - TW02 - TW03 - TW04 - TW05 - TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3;
     else if(mode == 2'b01)
-        grid = grid - T1 - T2 - O1 - TW01 - TW02 - TW03 - TW04 - TW05 - TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3 - SP1 - SP2 - SP3 - SP4 - SP5 - W1 - W2 - W3 - W4;
+        grid = grid - O1 - TW01 - TW02 - TW03 - TW04 - TW05 - TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3 - SP1 - SP2 - SP3 - SP4 - SP5 - W1 - W2 - W3 - W4;
     else if(mode == 2'b10)
         grid = grid - SP1 - SP2 - SP3 - SP4 - SP5 - W1 - W2 - W3 - W4- T1 - T2- TW11 - TW12 - TW13 - TW14 - TW15 - F1 - F2 - F3;
     else if(mode == 2'b11)
