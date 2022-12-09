@@ -95,7 +95,7 @@ module clock_24hour(
                    
                 if (hour_in) begin
                     hour_value_next = hour_value_reg + 1;
-                    if (hour_value_reg == 12) begin // for 12 hour clock
+                    if (hour_value_reg == 23) begin // for 24 hour clock
                         hour_value_next = 0;
                     end
                 end
